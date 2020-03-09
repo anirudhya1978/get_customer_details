@@ -1,0 +1,36 @@
+import pymysql
+
+import json
+
+def main(event, context):
+    # TODO implement
+    cust_id = event["cust_id"]
+    print("About to connect")
+    customer_name = 'None'
+    
+    conn = pymysql.connect("<your database name>", user="xxxx",
+                           passwd="xxxx", db="database name", connect_timeout=5)
+    with conn.cursor() as cur:
+        cur.execute("select customer_name from customer_details where cust_id = " + str(cust_id))
+    
+    for row in cur:
+            #customer_name _ret= customer_name
+            print("Customer Name:"+ row[0])
+            customer_name = row[0]
+        
+
+    if customer_name == 'None': # if the customer does not exist then return null
+        print("Customer Does not exist")
+        
+        set_return = 0
+    else:        # if they do exist then return the name of the customer
+        set_return = customer_name
+    cur.close()    
+    conn.close()
+
+
+    return {
+        'statusCode': 200,
+        'Customer_name':set_return,
+        'body': json.dumps('Providing Customer Details!')
+    }
